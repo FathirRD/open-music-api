@@ -4,6 +4,8 @@ const Hapi = require('@hapi/hapi');
 const songs = require('./api/songs');
 const SongsService = require('./services/postgres/SongsService');
 const SongsValidator = require('./validator/songs');
+const ClientError = require('./exceptions/ClientError');
+const ServerError = require('./exceptions/ServerError');
 
 const init = async () => {
   const songsService = new SongsService();
@@ -15,6 +17,30 @@ const init = async () => {
         origin: ['*'],
       },
     },
+  });
+
+  // Try extention func for error handling
+  server.ext('onPreResponse', (request, h) => {
+    const { response } = request;
+
+    if (response instanceof ClientError) {
+      const newResponse = h.response({
+        status: 'fail',
+        message: response.message,
+      });
+      newResponse.code(response.statusCode);
+      return newResponse;
+    }
+    if (response instanceof ServerError) {
+      const newResponse = h.response({
+        status: 'error',
+        message: response.message,
+      });
+      newResponse.code(response.statusCode);
+      return newResponse;
+    }
+
+    return response.continue || response;
   });
 
   await server.register({
