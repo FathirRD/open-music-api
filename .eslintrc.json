@@ -12,6 +12,10 @@
     },
     "rules": {
       "no-console": "off",
-      "no-underscore-dangle": ["error", {"allowAfterThis": true}]
+      "no-underscore-dangle": [
+        "error", {
+          "allowAfterThis": true,
+          "allow": ["_exports"]
+        }]
     }
 }

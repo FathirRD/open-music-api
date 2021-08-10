@@ -38,7 +38,7 @@ class UsersService {
 
     const result = await this._pool.query(query);
 
-    if (result.rowCount > 0) {
+    if (result.rowCount) {
       throw new InvariantError('Username telah digunakan');
     }
   }
